@@ -15,9 +15,9 @@ def sketch_with_inversion(path, name, extension):
     #nextimg.save('4_nextimg.jpg')
     sketch_arr = cv2.divide(np.array(grayscaled_img), np.array(nextimg), scale=256.0)
     sketch = Image.fromarray(sketch_arr)
+    sketch.save(f'{name}.{extension}')
     plt.imshow(sketch, cmap='gray')
     plt.show()
-    sketch.save(f'{name}.{extension}')
 
 
 def sketch_without_inversion(path, name, extension):
@@ -26,10 +26,10 @@ def sketch_without_inversion(path, name, extension):
     #grayscale.save('1_grayscale.jpg')
     blurred_grayscaled_img = cv2.GaussianBlur(grayscale_img, (101,101), 0)
     sketch_arr = cv2.divide(grayscaled_img, blurred_grayscaled_img, scale=256.0)
-    plt.imshow(sketch_arr, cmap = 'gray')
-    plt.show()
     sketch = Image.fromarray(sketch_arr)
     sketch.save(f'{name}.{extension}')
+    plt.imshow(sketch_arr, cmap = 'gray')
+    plt.show()
 
 img_file_path = input('Give image name:\n').strip()
 sketch_with_inversion(img_file_path, 'sketch_1', 'jpg')
