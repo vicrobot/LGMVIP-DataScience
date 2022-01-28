@@ -23,7 +23,7 @@ X_train_n = X_train.to_numpy()
 l_X_train_n = list(X_train_n)
 k_means = X_train_n[:k]
 
-M = 10 #iterations for k _means
+M = 20 #iterations for k _means
 
 
 """
@@ -67,7 +67,7 @@ fig, ax = plt.subplots()
 colors = {0:'r', 1:'g', 2:'b'}
 
 def plot(ax, X_train_n, k_means, color_code_l):
-    
+    #plots on sepal length vs petal length plane
     for point,color_code in zip(X_train_n, color_code_l):
         ax.scatter(point[0], point[3], c=colors[color_code])
         
@@ -75,15 +75,18 @@ def plot(ax, X_train_n, k_means, color_code_l):
             ax.scatter(point[0], point[3], c='k')
             
     return ax
-        
+
+def init():
+    for point in X_train_n:
+        ax.scatter(point[0], point[3], c='y')
+
 def animate(j):
     ax.cla()
-    print('cleared')
     k_means, color_code = j
     ax_obj = plot(ax, X_train_n, k_means, color_code)
     return [ax_obj]
 
-ani = fa(fig, animate, frames = list(gen_k_means(X_train_n)),interval=1000,
+ani = fa(fig, animate, frames = list(gen_k_means(X_train_n)),init_func = init,
                         blit = False, repeat = False)
 
 
