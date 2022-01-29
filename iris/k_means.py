@@ -67,25 +67,35 @@ def gen_k_means(k_means):
 
 class anim:
     def __init__(self):
-        self.fig, self.ax = plt.subplots()
-        self.scat = self.ax.scatter(X_train_n[:,0],X_train_n[:,2], c='y')
+        self.fig, (self.ax1, self.ax2) = plt.subplots(1,2, figsize=(20,10))
+        self.scat1 = self.ax1.scatter(X_train_n[:,0],X_train_n[:,2], c='y')
+        self.scat2 = self.ax2.scatter(X_train_n[:,1],X_train_n[:,3], c='y')
         self.colors = {0:'r', 1:'g', 2:'b'}
-        self.ax.set_xlabel('Iris sepal length')
-        self.ax.set_ylabel('Iris petal length')
+        self.ax1.set_xlabel('Iris sepal length')
+        self.ax1.set_ylabel('Iris petal length')
+        self.ax2.set_xlabel('Iris sepal width')
+        self.ax2.set_ylabel('Iris petal width')
         
     def animate(self,j):
         k_means, color_code, iter_n = j
         self.k_means = k_means
-        main_frame = X_train_n[:, [0,2]]
-        self.ax.set_title(f'Frame: {iter_n+1}')
+        main_frame1 = X_train_n[:, [0,2]]
+        main_frame2 = X_train_n[:, [1,3]]
+        plt.suptitle(f'Frame: {iter_n+1}')
         color = [self.colors[i] for i in color_code]
-        frame_2 = []
+        frame_2_1 = []
+        frame_2_2 = []
         for point in k_means:
-            frame_2.append([point[0], point[2]])
-        n_mf = np.append(main_frame, frame_2).reshape(-1, 2)
+            frame_2_1.append([point[0], point[2]])
+            frame_2_2.append([point[1], point[3]])
+        n_mf1 = np.append(main_frame1, frame_2_1).reshape(-1, 2)
+        n_mf2 = np.append(main_frame2, frame_2_2).reshape(-1, 2)
         
-        self.scat.set_facecolor(color+['k']*k) #sets colors 
-        self.scat.set_offsets(n_mf)  #sets coords for points to plot
+        self.scat1.set_facecolor(color+['k']*k) #sets colors 
+        self.scat1.set_offsets(n_mf1)  #sets coords for points to plot
+        
+        self.scat2.set_facecolor(color+['k']*k) #sets colors 
+        self.scat2.set_offsets(n_mf2)  #sets coords for points to plot
 
     def run(self,gen_k_means):
         ani = fa(self.fig, self.animate, frames = gen_k_means(X_train_n), interval = 500,
@@ -93,7 +103,6 @@ class anim:
 
         plt.show()
         return 
-
 
 anim().run(gen_k_means)
 
