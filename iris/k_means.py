@@ -2,11 +2,10 @@
 import pandas as pd
 from numpy import inf
 import numpy as np
-from scipy.spatial.distance import euclidean
-#from itertools import product as prd
+#from scipy.spatial.distance import euclidean
+from itertools import product as prd
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation as fa
-
 
 #loading data
 df = pd.read_csv('iris.csv')
@@ -17,47 +16,31 @@ Y = df[df.columns[-1]]
 k = 3
 X_n = X.to_numpy()
 l_X_n = list(X_n)
-k_means = X_n[:k]
 
-M = 20 #iterations for k _means
 retries_c = 5 #have to make this much retries to overcome from the loss from sticking in local minima
-
 
 """
 The moment grouping is introduced, the inter vs intra fight gets existed.
 This fight helps k-means to minimize when right means are obtained (hopefully)
 """
 
-def gen_k_means(k_means):
+#k means optimizer
+def gen_k_means(X_n):
+    k_means = X_n[:k]
+    M = 20 #iterations for k _means
     #iterating M times
     for _ in range(M):
-        #X_runner stores corresponding neta of that value
-        X_runner = []
         color_code_l = []
-        for value in X_n:
-            chosen_mean = k_means[0]
-            dist = inf
-            color_code = 0
-            counter = 0
-            for i in range(k):
-                mean = k_means[i]
-                new_dist = euclidean(mean, value)
-                
-                if dist > new_dist:
-                    dist = new_dist
-                    chosen_mean = mean
-                    color_code = counter
-                counter += 1
-            color_code_l.append(color_code)
-            X_runner.append(tuple(chosen_mean))
-
+        ml = np.asarray(list(prd(X_n, k_means)))
+        dists = np.linalg.norm(ml[:,0] - ml[:,1], axis=1)
+        idxs = dists.reshape((-1,k)).argmin(axis=1)
+        color_code_l = idxs
         #for chosen neta and their corresponding public, this below stuff makes new election and new means
         #are produced(intra mean)
-        df2 = pd.DataFrame({'vals':l_X_n, 'neta':X_runner})
+        df2 = pd.DataFrame({'vals':l_X_n, 'neta':idxs})
         grouped = df2.groupby('neta')
         k_means = (grouped.sum()/grouped.count()).to_numpy().flatten()
         yield k_means, color_code_l, _
-
 
 class anim:
     def __init__(self):
@@ -96,7 +79,7 @@ class anim:
                         blit = False, repeat = False)
 
         plt.show()
-        return 
+        return
 
 anim().run(gen_k_means)
 
